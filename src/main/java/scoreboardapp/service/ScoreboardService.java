@@ -9,7 +9,6 @@ import scoreboardapp.exception.TeamNameNullOrEmptyException;
 import scoreboardapp.model.Match;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +79,18 @@ public class ScoreboardService {
         sortedMatches.addAll(ongoingMatches.entrySet());
         sortedMatches.addAll(finishedMatches.entrySet());
 
-        // Sort by matchId (oldest first)
-        sortedMatches.sort(Comparator.comparingInt(Map.Entry::getKey));
+        // Sort by total score (descending), then by most recently started match (matchId descending)
+        sortedMatches.sort((entry1, entry2) -> {
+            int score1 = entry1.getValue().getHomeScore() + entry1.getValue().getAwayScore();
+            int score2 = entry2.getValue().getHomeScore() + entry2.getValue().getAwayScore();
+
+            // If scores are the same, compare by matchId (most recent match first)
+            if (score1 == score2) {
+                return Integer.compare(entry2.getKey(), entry1.getKey());
+            }
+            // Compare by total score
+            return Integer.compare(score2, score1);
+        });
 
         // Return only the match objects in sorted order
         List<Match> result = new ArrayList<>();
@@ -90,4 +99,5 @@ public class ScoreboardService {
         }
         return result;
     }
+
 }

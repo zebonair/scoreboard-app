@@ -11,7 +11,7 @@ This project implements a simple scoreboard service library for managing sport m
 
 ## Assumptions and Design Decisions
 
-- **No Match ID**: Each match is identified by its position in the ongoing matches map (the match ID is auto-generated sequentially).
+- **No True Match ID**: Each match is identified by its position in the ongoing matches map (the match ID is auto-generated sequentially).
 - **Match Teams Validation**: A team is prevented from playing against itself, and it's ensured teams are not used in multiple ongoing matches.
 - **Exception Handling**: The service includes custom exceptions for scenarios like:
     - Trying to start a match between the same teams.

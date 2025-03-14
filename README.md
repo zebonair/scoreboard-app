@@ -1,6 +1,6 @@
 # Scoreboard
 
-This project implements a simple scoreboard service library for managing ongoing and finished matches, allowing the user to start new matches, update scores, finish matches, and view match summaries.
+This project implements a simple scoreboard service library for managing sport matches, allowing the user to start new matches, update scores, finish matches, and view match summaries.
 
 ## Features
 

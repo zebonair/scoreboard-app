@@ -2,11 +2,17 @@ package scoreboardapp.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import scoreboardapp.exception.MatchAlreadyFinishedException;
+import scoreboardapp.exception.NoMatchFoundException;
+import scoreboardapp.exception.SameTeamException;
+import scoreboardapp.exception.TeamAlreadyInMatchException;
+import scoreboardapp.exception.TeamNameNullOrEmptyException;
 import scoreboardapp.model.Match;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ScoreboardServiceTest {
     private ScoreboardService scoreboardService;
@@ -19,6 +25,8 @@ class ScoreboardServiceTest {
     private static final String FRANCE = "France";
     private static final String URUGUAY = "Uruguay";
     private static final String ITALY = "Italy";
+    private static final String EMPTY_STRING = "";
+    private static final String NULL_TEAM = null;
 
     @BeforeEach
     void setUp() {
@@ -74,5 +82,68 @@ class ScoreboardServiceTest {
         assertEquals(MEXICO, summary.get(0).getHomeTeam());
         assertEquals(SPAIN, summary.get(1).getHomeTeam());
         assertEquals(GERMANY, summary.get(2).getHomeTeam());
+    }
+
+    @Test
+    void testStartNewMatchWithInvalidTeamNames() {
+        assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(NULL_TEAM, CANADA));
+        assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(MEXICO, NULL_TEAM));
+
+        assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(EMPTY_STRING, CANADA));
+        assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(MEXICO, EMPTY_STRING));
+    }
+
+    @Test
+    void testStartNewMatchWithSameTeams() {
+        assertThrows(SameTeamException.class, () ->
+            scoreboardService.startNewMatch(MEXICO, MEXICO));
+    }
+
+    @Test
+    void testUpdateScoreForNonExistingMatch() {
+        assertThrows(NoMatchFoundException.class, () ->
+            scoreboardService.updateScore(99, 2, 3));
+    }
+
+    @Test
+    void testFinishAlreadyFinishedMatch() {
+        scoreboardService.startNewMatch(URUGUAY, ITALY);
+        scoreboardService.finishMatch(1);
+        assertThrows(MatchAlreadyFinishedException.class, () ->
+            scoreboardService.finishMatch(1));
+
+        List<Match> summary = scoreboardService.getSummary();
+        assertEquals(1, summary.size());
+    }
+
+    @Test
+    void testGetSummaryWhenNoMatches() {
+        List<Match> summary = scoreboardService.getSummary();
+        assertEquals(0, summary.size());
+    }
+
+    @Test
+    void testStartNewMatchWithSameTeamInOngoingMatch() {
+        scoreboardService.startNewMatch(MEXICO, CANADA);
+
+        assertThrows(TeamAlreadyInMatchException.class, () ->
+            scoreboardService.startNewMatch(MEXICO, ITALY));
+
+        assertThrows(TeamAlreadyInMatchException.class, () ->
+            scoreboardService.startNewMatch(FRANCE, MEXICO));
+
+        assertThrows(TeamAlreadyInMatchException.class, () ->
+            scoreboardService.startNewMatch(CANADA, GERMANY));
+
+        assertThrows(TeamAlreadyInMatchException.class, () ->
+            scoreboardService.startNewMatch(BRAZIL, CANADA));
+    }
+
+    @Test
+    void testFinishMatchWhenMatchNotFound() {
+        scoreboardService.startNewMatch(MEXICO, CANADA);
+
+        assertThrows(NoMatchFoundException.class, () ->
+            scoreboardService.finishMatch(99));
     }
 }

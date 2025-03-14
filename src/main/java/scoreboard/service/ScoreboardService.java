@@ -28,6 +28,7 @@ public class ScoreboardService {
         if (homeTeam == null || homeTeam.isEmpty() || awayTeam == null || awayTeam.isEmpty()) {
             throw new TeamNameNullOrEmptyException();
         }
+
         if (homeTeam.equals(awayTeam)) {
             throw new SameTeamException();
         }
@@ -49,26 +50,27 @@ public class ScoreboardService {
 
 
     public void updateScore(int matchId, int homeScore, int awayScore) {
-        Match match = ongoingMatches.get(matchId);
-        if (match == null) {
+        if (!ongoingMatches.containsKey(matchId)) {
             throw new NoMatchFoundException();
         }
 
+        Match match = ongoingMatches.get(matchId);
         match.updateScore(homeScore, awayScore);
     }
 
     public void finishMatch(int matchId) {
-        Match match = ongoingMatches.remove(matchId);
-        if (match == null) {
-            match = finishedMatches.get(matchId);
-            if (match != null) {
-                throw new MatchAlreadyFinishedException();
-            }
+        if (!ongoingMatches.containsKey(matchId) && !finishedMatches.containsKey(matchId)) {
             throw new NoMatchFoundException();
         }
 
+        if (finishedMatches.containsKey(matchId)) {
+            throw new MatchAlreadyFinishedException();
+        }
+
+        Match match = ongoingMatches.remove(matchId);
         finishedMatches.put(matchId, match);
     }
+
 
     public List<Match> getSummary() {
         if (ongoingMatches.isEmpty()) {

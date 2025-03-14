@@ -1,12 +1,12 @@
-package scoreboardapp.service;
+package scoreboard.service;
 
 
-import scoreboardapp.exception.MatchAlreadyFinishedException;
-import scoreboardapp.exception.NoMatchFoundException;
-import scoreboardapp.exception.SameTeamException;
-import scoreboardapp.exception.TeamAlreadyInMatchException;
-import scoreboardapp.exception.TeamNameNullOrEmptyException;
-import scoreboardapp.model.Match;
+import scoreboard.exception.MatchAlreadyFinishedException;
+import scoreboard.exception.NoMatchFoundException;
+import scoreboard.exception.SameTeamException;
+import scoreboard.exception.TeamAlreadyInMatchException;
+import scoreboard.exception.TeamNameNullOrEmptyException;
+import scoreboard.model.Match;
 
 import java.util.ArrayList;
 import java.util.HashMap;

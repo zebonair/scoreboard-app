@@ -1,4 +1,4 @@
-package scoreboardapp.exception;
+package scoreboard.exception;
 
 public class TeamNameNullOrEmptyException extends IllegalArgumentException {
     public TeamNameNullOrEmptyException() {

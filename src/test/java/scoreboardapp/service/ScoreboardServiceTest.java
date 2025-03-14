@@ -62,9 +62,7 @@ class ScoreboardServiceTest {
         scoreboardService.finishMatch(1);
 
         List<Match> summary = scoreboardService.getSummary();
-        assertEquals(1, summary.size());
-        assertEquals(URUGUAY, summary.get(0).getHomeTeam());
-        assertEquals(ITALY, summary.get(0).getAwayTeam());
+        assertEquals(0, summary.size());
     }
 
     @Test
@@ -126,11 +124,9 @@ class ScoreboardServiceTest {
     void finishAlreadyFinishedMatch() {
         scoreboardService.startNewMatch(URUGUAY, ITALY);
         scoreboardService.finishMatch(1);
+
         assertThrows(MatchAlreadyFinishedException.class, () ->
             scoreboardService.finishMatch(1));
-
-        List<Match> summary = scoreboardService.getSummary();
-        assertEquals(1, summary.size());
     }
 
     @Test

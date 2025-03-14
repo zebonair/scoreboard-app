@@ -7,7 +7,7 @@ This project implements a simple scoreboard service library for managing ongoing
 - **Start a new match**: Begin a new match by specifying home and away teams.
 - **Update scores**: Update the scores of ongoing matches.
 - **Finish a match**: Mark a match as finished and move it from the ongoing matches list to the finished matches list.
-- **Match summary**: Get a summary of ongoing and finished matches sorted by match ID (oldest first).
+- **Match summary**: Get a summary of ongoing matches sorted by their total score 
 
 ## Assumptions and Design Decisions
 

@@ -34,20 +34,20 @@ class ScoreboardServiceTest {
     }
 
     @Test
-    void testStartNewMatch() {
+    void startNewMatch() {
         scoreboardService.startNewMatch(MEXICO, CANADA);
         scoreboardService.startNewMatch(SPAIN, BRAZIL);
 
         List<Match> summary = scoreboardService.getSummary();
         assertEquals(2, summary.size());
-        assertEquals(MEXICO, summary.get(0).getHomeTeam());
-        assertEquals(CANADA, summary.get(0).getAwayTeam());
-        assertEquals(SPAIN, summary.get(1).getHomeTeam());
-        assertEquals(BRAZIL, summary.get(1).getAwayTeam());
+        assertEquals(SPAIN, summary.get(0).getHomeTeam());
+        assertEquals(BRAZIL, summary.get(0).getAwayTeam());
+        assertEquals(MEXICO, summary.get(1).getHomeTeam());
+        assertEquals(CANADA, summary.get(1).getAwayTeam());
     }
 
     @Test
-    void testUpdateScore() {
+    void updateScore() {
         scoreboardService.startNewMatch(GERMANY, FRANCE);
         scoreboardService.updateScore(1, 2, 3);
 
@@ -57,35 +57,50 @@ class ScoreboardServiceTest {
     }
 
     @Test
-    void testFinishMatch() {
+    void finishMatch() {
         scoreboardService.startNewMatch(URUGUAY, ITALY);
         scoreboardService.finishMatch(1);
 
         List<Match> summary = scoreboardService.getSummary();
-        assertEquals(1, summary.size());
-        assertEquals(URUGUAY, summary.get(0).getHomeTeam());
-        assertEquals(ITALY, summary.get(0).getAwayTeam());
+        assertEquals(0, summary.size());
     }
 
     @Test
-    void testSummaryOrdering() {
+    void summaryOrdering() {
         scoreboardService.startNewMatch(MEXICO, CANADA);
         scoreboardService.startNewMatch(SPAIN, BRAZIL);
         scoreboardService.startNewMatch(GERMANY, FRANCE);
+        scoreboardService.startNewMatch(URUGUAY, ITALY);
 
         scoreboardService.updateScore(1, 0, 5);
         scoreboardService.updateScore(2, 10, 2);
         scoreboardService.updateScore(3, 2, 2);
+        scoreboardService.updateScore(4, 7, 9);
 
         List<Match> summary = scoreboardService.getSummary();
 
-        assertEquals(MEXICO, summary.get(0).getHomeTeam());
+        assertEquals(URUGUAY, summary.get(0).getHomeTeam());
         assertEquals(SPAIN, summary.get(1).getHomeTeam());
-        assertEquals(GERMANY, summary.get(2).getHomeTeam());
+        assertEquals(MEXICO, summary.get(2).getHomeTeam());
+        assertEquals(GERMANY, summary.get(3).getHomeTeam());
     }
 
     @Test
-    void testStartNewMatchWithInvalidTeamNames() {
+    void summaryOrderingWithSameResults() {
+        scoreboardService.startNewMatch(MEXICO, CANADA);
+        scoreboardService.startNewMatch(SPAIN, BRAZIL);
+
+        scoreboardService.updateScore(1, 0, 5);
+        scoreboardService.updateScore(2, 2, 3);
+
+        List<Match> summary = scoreboardService.getSummary();
+
+        assertEquals(SPAIN, summary.get(0).getHomeTeam());
+        assertEquals(MEXICO, summary.get(1).getHomeTeam());
+    }
+
+    @Test
+    void startNewMatchWithInvalidTeamNames() {
         assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(NULL_TEAM, CANADA));
         assertThrows(TeamNameNullOrEmptyException.class, () -> scoreboardService.startNewMatch(MEXICO, NULL_TEAM));
 
@@ -94,36 +109,34 @@ class ScoreboardServiceTest {
     }
 
     @Test
-    void testStartNewMatchWithSameTeams() {
+    void startNewMatchWithSameTeams() {
         assertThrows(SameTeamException.class, () ->
             scoreboardService.startNewMatch(MEXICO, MEXICO));
     }
 
     @Test
-    void testUpdateScoreForNonExistingMatch() {
+    void updateScoreForNonExistingMatch() {
         assertThrows(NoMatchFoundException.class, () ->
             scoreboardService.updateScore(99, 2, 3));
     }
 
     @Test
-    void testFinishAlreadyFinishedMatch() {
+    void finishAlreadyFinishedMatch() {
         scoreboardService.startNewMatch(URUGUAY, ITALY);
         scoreboardService.finishMatch(1);
+
         assertThrows(MatchAlreadyFinishedException.class, () ->
             scoreboardService.finishMatch(1));
-
-        List<Match> summary = scoreboardService.getSummary();
-        assertEquals(1, summary.size());
     }
 
     @Test
-    void testGetSummaryWhenNoMatches() {
+    void getSummaryWhenNoMatches() {
         List<Match> summary = scoreboardService.getSummary();
         assertEquals(0, summary.size());
     }
 
     @Test
-    void testStartNewMatchWithSameTeamInOngoingMatch() {
+    void startNewMatchWithSameTeamInOngoingMatch() {
         scoreboardService.startNewMatch(MEXICO, CANADA);
 
         assertThrows(TeamAlreadyInMatchException.class, () ->
@@ -140,7 +153,7 @@ class ScoreboardServiceTest {
     }
 
     @Test
-    void testFinishMatchWhenMatchNotFound() {
+    void finishMatchWhenMatchNotFound() {
         scoreboardService.startNewMatch(MEXICO, CANADA);
 
         assertThrows(NoMatchFoundException.class, () ->

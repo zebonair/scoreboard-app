@@ -9,7 +9,6 @@ import scoreboardapp.exception.TeamNameNullOrEmptyException;
 import scoreboardapp.model.Match;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,22 +71,31 @@ public class ScoreboardService {
     }
 
     public List<Match> getSummary() {
-        if (ongoingMatches.isEmpty() && finishedMatches.isEmpty()) {
+        if (ongoingMatches.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<Map.Entry<Integer, Match>> sortedMatches = new ArrayList<>();
-        sortedMatches.addAll(ongoingMatches.entrySet());
-        sortedMatches.addAll(finishedMatches.entrySet());
+        List<Map.Entry<Integer, Match>> sortedMatches = new ArrayList<>(ongoingMatches.entrySet());
 
-        // Sort by matchId (oldest first)
-        sortedMatches.sort(Comparator.comparingInt(Map.Entry::getKey));
+        sortedMatches.sort((entry1, entry2) -> {
+            int score1 = entry1.getValue().getHomeScore() + entry1.getValue().getAwayScore();
+            int score2 = entry2.getValue().getHomeScore() + entry2.getValue().getAwayScore();
+
+            // If total score is equal, compare by matchId (most recent first)
+            if (score1 == score2) {
+                return entry2.getKey() - entry1.getKey();
+            }
+
+            //Sort by total score (descending)
+            return score2 - score1;
+        });
 
         // Return only the match objects in sorted order
         List<Match> result = new ArrayList<>();
         for (Map.Entry<Integer, Match> entry : sortedMatches) {
             result.add(entry.getValue());
         }
+
         return result;
     }
 }

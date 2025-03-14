@@ -1,4 +1,4 @@
-package scoreboardapp.exception;
+package scoreboard.exception;
 
 public class MatchAlreadyFinishedException extends IllegalArgumentException {
     public MatchAlreadyFinishedException() {

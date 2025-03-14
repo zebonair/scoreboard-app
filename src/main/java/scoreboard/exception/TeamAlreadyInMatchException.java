@@ -1,4 +1,4 @@
-package scoreboardapp.exception;
+package scoreboard.exception;
 
 public class TeamAlreadyInMatchException extends IllegalArgumentException {
     public TeamAlreadyInMatchException(String team) {

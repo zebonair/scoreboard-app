@@ -1,4 +1,4 @@
-package scoreboardapp.model;
+package scoreboard.model;
 
 public class Match {
     private final String homeTeam;
